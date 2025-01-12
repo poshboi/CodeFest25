@@ -72,4 +72,53 @@ def move():
             game_over = True
             return
    
-    
+    if snake.x == food.x and snake.y == food.y:
+        snake_body.append(Tile(snake_body[-1].x, snake_body[-1].y))  # Add new segment at the end
+        food.x = random.randint(0, COLS-1) * TILE_SIZE
+        food.y = random.randint(0, ROWS-1) * TILE_SIZE
+        score += 1
+
+ 
+    for i in range(len(snake_body) - 1, 0, -1):
+        snake_body[i].x = snake_body[i-1].x
+        snake_body[i].y = snake_body[i-1].y
+
+   
+    snake.x += velocityX * TILE_SIZE
+    snake.y += velocityY * TILE_SIZE
+
+    snake_body[0].x = snake.x
+    snake_body[0].y = snake.y
+
+def draw():
+    global snake, food, snake_body, game_over, score
+    move()
+
+    canvas.delete("all")
+
+  
+    canvas.create_oval(food.x + 5, food.y + 5, food.x + TILE_SIZE - 5, food.y + TILE_SIZE - 5, fill='red', outline='red')
+
+    for i in range(1, len(snake_body)):
+        canvas.create_line(snake_body[i-1].x + TILE_SIZE // 2, snake_body[i-1].y + TILE_SIZE // 2,
+                           snake_body[i].x + TILE_SIZE // 2, snake_body[i].y + TILE_SIZE // 2,
+                           fill="lime green", width=TILE_SIZE // 2)
+
+
+    canvas.create_oval(snake.x + 5, snake.y + 5, snake.x + TILE_SIZE - 5, snake.y + TILE_SIZE - 5, fill='lime green', outline='black')
+
+
+    if game_over:
+        canvas.create_text(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, font="Arial 20", text=f"Game Over: {score}", fill="white")
+    else:
+        canvas.create_text(30, 20, font="Arial 10", text=f"Score: {score}", fill="white")
+   
+    window.after(80, draw)
+
+draw()
+
+window.bind("<KeyRelease>", change_direction)
+
+window.mainloop()
+
+
